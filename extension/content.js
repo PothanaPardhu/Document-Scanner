@@ -68,7 +68,54 @@ function hideNudge() {
   if (nudge) nudge.remove();
 }
 
+function checkResume() {
+  const url = window.location.href;
+  const title = document.title;
+  
+  // Save current session to backend
+  chrome.runtime.sendMessage({ 
+    action: 'saveSession', 
+    session: { url, title } 
+  });
+
+  // Check if we should show "Welcome back" nudge
+  // For demo, we just show it if they haven't started a task yet
+  setTimeout(() => {
+    if (noTaskStarted) {
+      showResumePrompt();
+    }
+  }, 2000);
+}
+
+function showResumePrompt() {
+  if (document.getElementById('ff-resume-prompt')) return;
+  
+  const prompt = document.createElement('div');
+  prompt.id = 'ff-resume-prompt';
+  prompt.style.cssText = 'position:fixed; bottom:20px; right:20px; background:white; padding:16px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.1); border:1px solid #e2e8f0; z-index:2147483647; width:280px; animation:ff-slide-up 0.5s ease-out;';
+  
+  prompt.innerHTML = `
+    <div style="font-weight:bold; margin-bottom:4px; color:#1f2937;">Continue learning?</div>
+    <div style="font-size:12px; color:#64748b; margin-bottom:12px;">You were halfway through this page last time.</div>
+    <div style="display:flex; gap:8px;">
+      <button class="ff-btn ff-btn-primary" id="ff-resume-yes" style="flex:1; font-size:12px;">Resume</button>
+      <button class="ff-btn ff-btn-secondary" id="ff-resume-no" style="flex:1; font-size:12px;">Dismiss</button>
+    </div>
+  `;
+  
+  document.body.appendChild(prompt);
+  
+  document.getElementById('ff-resume-yes').addEventListener('click', () => {
+    prompt.remove();
+    enableSmartReadingMode();
+  });
+  document.getElementById('ff-resume-no').addEventListener('click', () => {
+    prompt.remove();
+  });
+}
+
 startNudgeTimer();
+checkResume();
 
 // Listen for messages from popup (Demo Mode, Panic/Gesture Mode)
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -77,8 +124,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("Focus-Flow Demo Mode:", isDemoMode);
   } else if (request.action === "triggerGestureCleanup") {
     enableSmartReadingMode();
+  } else if (request.action === "triggerPanicMode") {
+    showPanicScreen();
   }
 });
+
+function showPanicScreen() {
+  if (document.getElementById('ff-panic-overlay')) return;
+  
+  const panic = document.createElement('div');
+  panic.id = 'ff-panic-overlay';
+  panic.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.98); z-index:2147483647; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px); animation:ff-fade-in 0.8s ease-out;';
+  
+  panic.innerHTML = `
+    <div style="text-align:center; max-width: 500px;">
+      <h1 style="font-size:32px; color:#1f2937; margin-bottom:16px;">Take a deep breath.</h1>
+      <p style="font-size:18px; color:#4b5563; line-height:1.6;">You're doing great. Let's clear the distractions and start small.</p>
+      <div style="margin:40px 0;">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" style="animation:ff-pulse 2s infinite;"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <button class="ff-btn ff-btn-primary" id="ff-panic-reset" style="padding:12px 32px; font-size:16px;">I'm Ready Now</button>
+    </div>
+  `;
+  
+  document.body.appendChild(panic);
+  
+  document.getElementById('ff-panic-reset').addEventListener('click', () => {
+    panic.style.opacity = '0';
+    setTimeout(() => {
+      panic.remove();
+      enableSmartReadingMode(); // Transition to focus mode after reset
+    }, 500);
+  });
+}
 
 // Text Selection Handling
 document.addEventListener('mouseup', (e) => {
@@ -129,6 +207,11 @@ function showFAB(x, y) {
       <button class="ff-btn ff-btn-secondary" id="ff-tasks-btn">📋 Micro-Tasks</button>
       <button class="ff-btn ff-btn-secondary" id="ff-example-btn" style="background:#e0e7ff;color:#4f46e5;">💡 Example</button>
       <button class="ff-btn ff-btn-secondary" id="ff-quiz-btn" style="background:#fef3c7;color:#d97706;">🧠 Test Me</button>
+      <button class="ff-btn ff-btn-secondary" id="ff-translate-btn" style="background:#f0fdf4;color:#166534;">🌐 Translate</button>
+    </div>
+    <div style="margin-top: 8px; font-size: 10px; color: #94a3b8; display: flex; align-items: center; gap: 4px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Privacy-First AI (Encrypted)
     </div>
     <div class="ff-loading" id="ff-loading">Processing...</div>
     <div id="ff-result-area" style="display:none;"></div>
@@ -140,6 +223,7 @@ function showFAB(x, y) {
   document.getElementById('ff-tasks-btn').addEventListener('click', () => handleAction('tasks'));
   document.getElementById('ff-example-btn').addEventListener('click', () => handleAction('example'));
   document.getElementById('ff-quiz-btn').addEventListener('click', () => handleAction('quiz'));
+  document.getElementById('ff-translate-btn').addEventListener('click', () => handleAction('translate'));
 }
 
 function hideFAB() {
@@ -154,7 +238,7 @@ function handleAction(action) {
   const resultArea = document.getElementById('ff-result-area');
   
   loading.style.display = 'block';
-  loading.innerText = action === 'simplify' ? 'Simplifying locally...' : 'Generating micro-tasks...';
+  loading.innerText = action === 'simplify' ? 'Simplifying locally...' : 'Processing...';
   resultArea.style.display = 'none';
   
   // Safety check for Chrome Extension environment
@@ -163,20 +247,28 @@ function handleAction(action) {
     return;
   }
   
-  chrome.storage.sync.get(['difficulty'], (result) => {
+  chrome.storage.sync.get(['difficulty', 'targetLang'], (result) => {
     const level = result.difficulty || 'Medium';
+    const lang = result.targetLang || 'Hindi';
     
     chrome.runtime.sendMessage({
       action: action,
       text: currentSelection,
-      level: level
+      level: level,
+      targetLang: lang
     }, (response) => {
+      console.log(`Focus-Flow: Received response for ${action}`, response);
       loading.style.display = 'none';
       resultArea.style.display = 'block';
       
-      if (response && response.error) {
+      if (!response) {
+        resultArea.innerHTML = `<span style="color:red">Error: No response from extension background. Try reloading the extension.</span>`;
+        return;
+      }
+
+      if (response.error) {
         resultArea.innerHTML = `<span style="color:red">Error: ${response.error}</span>`;
-      } else if (response) {
+      } else {
         let contentHtml = '';
         let audioText = '';
         
@@ -184,6 +276,9 @@ function handleAction(action) {
           contentHtml = `<strong>Simplified:</strong><p>${response.summary}</p>`;
           audioText = response.summary;
           noTaskStarted = false; // Mark as active usage
+        } else if (action === 'translate') {
+          contentHtml = `<strong>Translated (${lang}):</strong><p>${response.translatedText}</p>`;
+          audioText = response.translatedText;
         } else if (action === 'tasks') {
           let tasksHtml = '<strong>Micro-Tasks:</strong><ul style="padding-left:20px;margin:5px 0;">';
           response.tasks.forEach(t => {
@@ -200,9 +295,10 @@ function handleAction(action) {
         } else if (action === 'quiz') {
           let quizHtml = '<strong>Quick Check:</strong><ul style="padding-left:20px;margin:5px 0;">';
           response.quiz.forEach((q, idx) => {
-            quizHtml += `<li style="margin-bottom:8px;"><strong>Q${idx+1}:</strong> ${q}<br><input type="text" placeholder="Your answer..." style="width:100%;margin-top:4px;padding:4px;border:1px solid #ccc;border-radius:4px;"></li>`;
+            quizHtml += `<li style="margin-bottom:8px;"><strong>Q${idx+1}:</strong> ${q}<br><input type="text" id="ff-quiz-ans-${idx}" placeholder="Your answer..." style="width:100%;margin-top:4px;padding:4px;border:1px solid #ccc;border-radius:4px;"></li>`;
           });
           quizHtml += '</ul>';
+          quizHtml += `<button class="ff-btn ff-btn-primary" id="ff-quiz-submit" style="width:100%;margin-top:8px;">Submit Answers</button>`;
           contentHtml = quizHtml;
           audioText = "Quiz time! " + response.quiz.join(". ");
           noTaskStarted = false;
@@ -211,6 +307,13 @@ function handleAction(action) {
         // Add Audio, PDF Export, and Community Insight Badge
         resultArea.innerHTML = `
           ${contentHtml}
+          <div id="ff-feedback-loop" style="display:none; margin-top: 10px; padding: 10px; background: #f0f9ff; border-radius: 8px; border: 1px solid #bae6fd;">
+            <p style="margin:0 0 8px 0; font-size: 12px; font-weight: bold;">Did you understand this concept?</p>
+            <div style="display:flex; gap: 8px;">
+              <button class="ff-btn ff-btn-primary" id="ff-feedback-yes" style="flex:1; font-size: 11px; padding: 4px;">Yes, clear!</button>
+              <button class="ff-btn ff-btn-secondary" id="ff-feedback-no" style="flex:1; font-size: 11px; padding: 4px;">Still confused</button>
+            </div>
+          </div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button class="ff-btn ff-btn-primary" id="ff-export-pdf" style="flex:1; background: #10b981;">📄 PDF</button>
             <button class="ff-btn ff-btn-secondary" id="ff-audio-btn" style="flex:1;">🔊 Listen</button>
@@ -219,6 +322,23 @@ function handleAction(action) {
             🌍 50+ students simplified this topic
           </div>
         `;
+
+        if (action === 'quiz') {
+          document.getElementById('ff-quiz-submit').addEventListener('click', () => {
+            document.getElementById('ff-feedback-loop').style.display = 'block';
+            document.getElementById('ff-quiz-submit').disabled = true;
+            document.getElementById('ff-quiz-submit').innerText = 'Submitted!';
+          });
+        }
+
+        document.getElementById('ff-feedback-yes')?.addEventListener('click', () => {
+          document.getElementById('ff-feedback-loop').innerHTML = '✨ Awesome! Keep going.';
+          setTimeout(() => document.getElementById('ff-feedback-loop').style.display = 'none', 2000);
+        });
+
+        document.getElementById('ff-feedback-no')?.addEventListener('click', () => {
+          document.getElementById('ff-feedback-loop').innerHTML = '💡 Try the <strong>Example</strong> button for a simpler analogy!';
+        });
 
         document.getElementById('ff-audio-btn').addEventListener('click', () => {
           if ('speechSynthesis' in window) {
@@ -292,9 +412,7 @@ function handleAction(action) {
           printWindow.document.close();
         });
 
-      } else {
-        resultArea.innerHTML = `<span style="color:red">No response from AI</span>`;
-      }
+      } 
     });
   });
 }

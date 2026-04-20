@@ -15,7 +15,7 @@ try {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
-// Use gemini-2.5-flash since their key is on the early access tier
+// Using gemini-2.5-flash as requested for the user's specific tier
 const MODEL_NAME = 'gemini-2.5-flash';
 
 /**
@@ -50,29 +50,56 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 /**
  * Base function to call Gemini with a specific prompt and expect JSON
  */
-async function callGemini(prompt, text, level = "Medium", retries = 1) {
-  // FAST DEMO MODE: Since the Gemini API is rate-limiting the account,
-  // we bypass the API call entirely to ensure the Chrome Extension UI loads instantly for the demo recording.
-  
-  // Simulate a very short realistic network delay (500ms)
-  await sleep(500);
-  
-  return {
-    summary: "⚠️ [API OVERLOADED] Google's Gemini 2.5 Flash servers are currently experiencing global high demand (503 Error). Please try again later.",
-    key_points: [
-      "Google's preview model servers are temporarily busy.",
-      "Your API key and code are working perfectly.",
-      "The app is using this mock data to keep the UI functional."
-    ],
-    tasks: [
-      "Wait a few minutes for Google's servers to recover.",
-      "Try clicking simplify again later.",
-      "Check out the new PDF layout while you wait!"
-    ],
-    quiz: [
-      "What does a 503 Error mean? (The server is overloaded!)"
-    ]
-  };
+async function callGemini(systemPrompt, userText, level = "Medium") {
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: MODEL_NAME,
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const fullPrompt = `
+      ${systemPrompt}
+      Difficulty Level: ${level}
+      
+      Input Text:
+      "${userText}"
+      
+      Return the response in this exact JSON format:
+      {
+        "summary": "string",
+        "key_points": ["string"],
+        "tasks": ["string"],
+        "quiz": ["string"]
+      }
+    `;
+
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    return validateAIResponse(response.text());
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    // Fallback to error message in summary
+    return {
+      summary: "⚠️ AI service is temporarily unavailable. Please check your internet connection.",
+      key_points: [],
+      tasks: [],
+      quiz: []
+    };
+  }
+}
+
+async function translateText(text, targetLang = "Hindi") {
+  try {
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+    const prompt = `Translate the following text into ${targetLang}. Only return the translated text without any explanations or markdown: "${text}"`;
+    
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return { translatedText: response.text().trim() };
+  } catch (error) {
+    console.error("Translation Error:", error);
+    return { error: "Translation failed" };
+  }
 }
 
 async function simplifyText(text, level) {
@@ -121,5 +148,6 @@ module.exports = {
   generateNotes,
   generateQuiz,
   explainExample,
+  translateText,
   callGemini
 };

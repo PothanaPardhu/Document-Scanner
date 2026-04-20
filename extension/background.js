@@ -29,6 +29,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(err => sendResponse({ error: err.message }));
     return true;
   }
+  
+  if (request.action === 'translate') {
+    handleApiCall(`${API_URL}/ai/translate`, { text: request.text, targetLang: request.targetLang })
+      .then(sendResponse)
+      .catch(err => sendResponse({ error: err.message }));
+    return true;
+  }
+
+  if (request.action === 'triggerPanic') {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "triggerPanicMode" });
+      }
+    });
+    return false;
+  }
+
+  if (request.action === 'saveSession') {
+    handleApiCall(`${API_URL}/progress/session`, request.session)
+      .then(sendResponse)
+      .catch(err => sendResponse({ error: err.message }));
+    return true;
+  }
 
   // GESTURE HUB BRIDGE:
   // When the Gesture Hub tab detects a swipe, it sends this message.
@@ -44,6 +67,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function handleApiCall(url, body) {
   try {
+    console.log(`Focus-Flow: Calling ${url}`);
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -53,12 +77,13 @@ async function handleApiCall(url, body) {
     });
     
     if (!response.ok) {
-      throw new Error(`API returned ${response.status}`);
+      console.error(`Focus-Flow: ${url} returned ${response.status}`);
+      throw new Error(`API returned ${response.status} (${url})`);
     }
     
     return await response.json();
   } catch (error) {
-    console.error("API Call Error:", error);
+    console.error("Focus-Flow: API Call Error:", error);
     throw error;
   }
 }

@@ -29,14 +29,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Log all requests
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 // Routes
 const aiRoutes = require('./routes/ai');
 const pdfRoutes = require('./routes/pdf');
 const authRoutes = require('./routes/auth').router;
+const progressRoutes = require('./routes/progress');
 
 app.use('/api/ai', aiRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/progress', progressRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'Focus-Flow AI Backend' });

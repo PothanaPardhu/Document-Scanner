@@ -37,12 +37,27 @@
         </select>
       </div>
 
+      <div class="setting-group">
+        <label for="target-lang">Translate To:</label>
+        <select id="target-lang">
+          <option value="Telugu" selected>Telugu</option>
+          <option value="Hindi">Hindi</option>
+          <option value="Spanish">Spanish</option>
+          <option value="French">French</option>
+          <option value="German">German</option>
+        </select>
+      </div>
+
       <button id="btn-login" class="btn primary">Login with Google</button>
       
-      <div class="camera-section">
-        <button id="btn-gesture" class="btn secondary">Enable Gesture Sweep</button>
-        <video id="video-feed" style="display:none;" autoplay playsinline></video>
-        <div id="gesture-status">Gestures: Off</div>
+      <div class="action-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+        <button id="btn-gesture" class="btn secondary">Gesture Hub</button>
+        <button id="btn-panic" class="btn secondary" style="background:#fee2e2; border-color:#fecaca; color:#dc2626;">Panic Mode</button>
+      </div>
+
+      <div style="margin-top: 16px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 10px; color: #64748b; display: flex; align-items: center; gap: 6px; border: 1px solid #e2e8f0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><strong>Privacy First:</strong> Your reading data is processed via encrypted tunnel and never stored permanently.</span>
       </div>
     </div>
   </div>

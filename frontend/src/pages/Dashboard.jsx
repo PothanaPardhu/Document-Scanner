@@ -3,17 +3,33 @@ import { Target, Clock, CheckCircle2, TrendingUp } from 'lucide-react';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
-    tasksCompleted: 24,
-    timeActive: 120, // minutes
-    inactivity: 15, // minutes
-    pagesSimplified: 42,
-    timeSaved: 85 // minutes estimated
+    tasksCompleted: 0,
+    timeActive: 0,
+    inactivity: 0,
+    pagesSimplified: 0,
+    timeSaved: 0
   });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/progress/stats')
+      .then(res => res.json())
+      .then(data => {
+        setStats(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch stats:", err);
+        setLoading(false);
+      });
+  }, []);
 
   // Calculate Focus Score: (Tasks * 0.5) + (TimeActive * 0.3) - (Inactivity * 0.2)
   const focusScore = Math.max(0, Math.min(100, Math.round(
     (stats.tasksCompleted * 0.5) + (stats.timeActive * 0.3) - (stats.inactivity * 0.2)
   )));
+
+  if (loading) return <div className="p-10 text-center">Loading your progress...</div>;
 
   return (
     <div className="p-10 animate-fade-in max-w-6xl mx-auto">

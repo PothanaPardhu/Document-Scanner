@@ -67,4 +67,16 @@ router.post('/example', async (req, res) => {
   }
 });
 
+router.post('/translate', async (req, res) => {
+  try {
+    const { text, targetLang } = req.body;
+    if (!text) return res.status(400).json({ error: 'Text is required' });
+    
+    const result = await aiService.translateText(text, targetLang || 'Hindi');
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Translation failed' });
+  }
+});
+
 module.exports = router;
