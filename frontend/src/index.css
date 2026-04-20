@@ -1,21 +1,62 @@
 @import "tailwindcss";
 
+:root {
+  /* --- The Palette: Quiet & Professional --- */
+  --bg-deep: #0F1115; /* Main Background */
+  --bg-surface: #1A1D23; /* Cards & Elevated Layers */
+  --border-subtle: #2D323A; /* Very thin, crisp borders */
+
+  --accent-primary: #6366F1; /* Royal Indigo (Muted) */
+  --accent-soft: #4F46E5; /* Darker Indigo for Hover */
+
+  /* --- Typography: The Secret to Premium UI --- */
+  --text-main: #F2F2F2; /* High Readability Bone White */
+  --text-muted: #94A3B8; /* Secondary Info / Labels */
+  --text-serif: 'Playfair Display', serif; /* For the Study Content */
+  --text-sans: 'Inter', sans-serif; /* For the App UI */
+
+  /* --- Spacing & Shaping --- */
+  --radius-sm: 4px; /* Sharp, professional corners */
+  --radius-md: 8px; /* Standard card corners */
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Body Styling */
 body {
-  background-color: #f9fafb;
-  color: #111827;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: var(--text-sans);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer components {
-  /* Glassmorphism Panel */
+  /* Premium Card Component */
+  .premium-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    transition: var(--transition-smooth);
+  }
+
+  .premium-card:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+  }
+
+  /* Serif Content Layer */
+  .serif-content {
+    font-family: var(--text-serif);
+    color: var(--text-main);
+    line-height: 1.8;
+  }
+
+  /* Glassmorphism Panel (Dark Version) */
   .glass-panel {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(26, 29, 35, 0.8);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.04);
-    border-radius: 1rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
   }
 
   /* Premium Buttons */
@@ -25,20 +66,19 @@ body {
     justify-content: center;
     gap: 0.5rem;
     padding: 0.625rem 1.5rem;
-    background-color: #4f46e5;
+    background-color: var(--accent-primary);
     color: white;
     font-weight: 500;
-    border-radius: 0.75rem;
-    transition: all 0.2s;
-    box-shadow: 0 4px 6px -1px rgba(199, 210, 254, 0.5);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-smooth);
   }
   
   .btn-primary:hover {
-    background-color: #4338ca;
+    background-color: var(--accent-soft);
   }
   
   .btn-primary:active {
-    transform: scale(0.95);
+    transform: scale(0.98);
   }
   
   .btn-secondary {
@@ -47,31 +87,33 @@ body {
     justify-content: center;
     gap: 0.5rem;
     padding: 0.625rem 1.5rem;
-    background-color: white;
-    color: #374151;
+    background-color: transparent;
+    color: var(--text-muted);
     font-weight: 500;
-    border-radius: 0.75rem;
-    border: 1px solid #e5e7eb;
-    transition: all 0.2s;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    transition: var(--transition-smooth);
   }
 
   .btn-secondary:hover {
-    background-color: #f9fafb;
+    background-color: var(--bg-surface);
+    color: var(--text-main);
+    border-color: var(--text-muted);
   }
 
-  .btn-secondary:active {
-    transform: scale(0.95);
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
   }
-
-  /* Dynamic Card hover */
-  .hover-card {
-    transition: all 0.3s;
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
   }
-  
-  .hover-card:hover {
-    transform: translateY(-0.25rem);
-    box-shadow: 0 20px 25px -5px rgba(224, 231, 255, 0.5);
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--border-subtle);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
   }
 }
 

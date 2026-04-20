@@ -88,7 +88,7 @@ async function callGemini(systemPrompt, userText, level = "Medium") {
   }
 }
 
-async function translateText(text, targetLang = "Hindi") {
+async function translateText(text, targetLang = "hi") {
   try {
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
     const prompt = `Translate the following text into ${targetLang}. Only return the translated text without any explanations or markdown: "${text}"`;

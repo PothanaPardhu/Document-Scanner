@@ -33,59 +33,55 @@ export default function Dashboard() {
 
   return (
     <div className="p-10 animate-fade-in max-w-6xl mx-auto">
-      <header className="mb-10">
-        <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
-        <p className="text-gray-500 mt-2">Here is your learning impact for this week.</p>
+      <header className="mb-12">
+        <h2 className="text-2xl font-medium tracking-tight text-white">Dashboard</h2>
+        <p className="text-sm text-[#94A3B8] mt-1">Academic performance & focus analysis.</p>
       </header>
 
       {/* Impact Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
         
-        <div className="glass-panel p-6 hover-card">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-              <Target size={24} />
+        <div className="premium-card flex flex-col gap-4">
+          <div className="flex justify-between items-start">
+            <p className="text-[10px] uppercase tracking-widest text-[#94A3B8]">Focus Score</p>
+            <div className="w-8 h-8 rounded-full border border-[#2D323A] flex items-center justify-center">
+              <div className="w-1 h-1 bg-[#6366F1] rounded-full"></div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Focus Score</p>
-              <h3 className="text-3xl font-bold text-gray-900">{focusScore}<span className="text-lg text-gray-500">/100</span></h3>
-            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-3xl font-light">{focusScore / 100}</h3>
+            <span className="text-xs text-[#94A3B8]">pts</span>
+          </div>
+          {/* Thin progress bar instead of circle */}
+          <div className="w-full h-[1px] bg-[#2D323A] mt-2 relative">
+            <div 
+              className="absolute h-full bg-[#6366F1] transition-all duration-1000" 
+              style={{ width: `${focusScore}%` }}
+            ></div>
           </div>
         </div>
 
-        <div className="glass-panel p-6 hover-card">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
-              <Clock size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Time Saved</p>
-              <h3 className="text-3xl font-bold text-gray-900">{stats.timeSaved} <span className="text-lg text-gray-500">min</span></h3>
-            </div>
+        <div className="premium-card">
+          <p className="text-[10px] uppercase tracking-widest text-[#94A3B8] mb-4">Time Saved</p>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-3xl font-light">{stats.timeSaved}</h3>
+            <span className="text-xs text-[#94A3B8]">min</span>
           </div>
         </div>
 
-        <div className="glass-panel p-6 hover-card">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
-              <CheckCircle2 size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Tasks Completed</p>
-              <h3 className="text-3xl font-bold text-gray-900">{stats.tasksCompleted}</h3>
-            </div>
+        <div className="premium-card">
+          <p className="text-[10px] uppercase tracking-widest text-[#94A3B8] mb-4">Tasks Completed</p>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-3xl font-light">{stats.tasksCompleted}</h3>
+            <span className="text-xs text-[#94A3B8]">units</span>
           </div>
         </div>
 
-        <div className="glass-panel p-6 hover-card">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
-              <TrendingUp size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Pages Simplified</p>
-              <h3 className="text-3xl font-bold text-gray-900">{stats.pagesSimplified}</h3>
-            </div>
+        <div className="premium-card">
+          <p className="text-[10px] uppercase tracking-widest text-[#94A3B8] mb-4">AI Simplifications</p>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-3xl font-light">{stats.pagesSimplified}</h3>
+            <span className="text-xs text-[#94A3B8]">pages</span>
           </div>
         </div>
 
@@ -95,56 +91,54 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Recent Tasks */}
-        <div className="lg:col-span-2 glass-panel p-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold">Recent Micro-Tasks</h3>
-            <button className="text-indigo-600 text-sm font-medium hover:underline">View All</button>
+        <div className="lg:col-span-2 premium-card">
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-sm uppercase tracking-widest text-[#94A3B8]">Recent Micro-Tasks</h3>
+            <button className="text-[#6366F1] text-[10px] uppercase tracking-widest hover:underline">View All</button>
           </div>
           
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             {[
-              { title: "Review the definition of Action Potentials", time: "10 mins ago", done: true },
-              { title: "Read simplified summary on page 3", time: "2 hours ago", done: true },
-              { title: "Answer the 3 generated quiz questions", time: "Yesterday", done: false },
+              { title: "Scan Key Concepts", time: "2m", done: true },
+              { title: "Review Neural Network Diagram", time: "5m", done: false },
+              { title: "Complete AI Quiz", time: "3m", done: false },
             ].map((task, i) => (
-              <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="flex items-center gap-3">
-                  <input type="checkbox" checked={task.done} readOnly className="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500" />
-                  <span className={task.done ? "line-through text-gray-400" : "text-gray-700 font-medium"}>
+              <div key={i} className="group flex items-center justify-between p-4 bg-[#1A1D23] border border-[#2D323A] rounded hover:border-[#6366F1]/30 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className={`w-4 h-4 rounded border ${task.done ? 'bg-[#6366F1] border-[#6366F1]' : 'border-[#2D323A]'} flex items-center justify-center transition-colors`}>
+                    {task.done && <span className="text-[8px] text-white">✓</span>}
+                  </div>
+                  <span className={`text-sm ${task.done ? 'text-[#4B5563] line-through' : 'text-[#F2F2F2]'}`}>
                     {task.title}
                   </span>
                 </div>
-                <span className="text-xs text-gray-400">{task.time}</span>
+                <span className="text-[10px] font-mono text-[#4B5563]">{task.time}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Focus Trend */}
-        <div className="glass-panel p-8">
-          <h3 className="text-xl font-bold mb-6">Daily Trend</h3>
-          <div className="h-48 flex items-end gap-2">
+        <div className="premium-card">
+          <h3 className="text-sm uppercase tracking-widest text-[#94A3B8] mb-8">Activity Trend</h3>
+          <div className="h-48 flex items-end gap-3">
             {[40, 55, 45, 70, 65, 85, focusScore].map((h, i) => (
-              <div key={i} className="w-full bg-indigo-100 rounded-t-md relative group">
+              <div key={i} className="w-full bg-[#1A1D23] border-x border-t border-[#2D323A] rounded-t-sm relative group">
                 <div 
-                  className="absolute bottom-0 w-full bg-indigo-500 rounded-t-md transition-all duration-500" 
+                  className="absolute bottom-0 w-full bg-[#6366F1]/20 border-t border-[#6366F1] transition-all duration-700" 
                   style={{ height: `${h}%` }}
                 ></div>
-                {/* Tooltip */}
-                <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded transition-opacity">
-                  {h}
-                </div>
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-2 text-xs text-gray-400 font-medium">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Today</span>
+          <div className="flex justify-between mt-4 text-[10px] uppercase tracking-tighter text-[#4B5563]">
+            <span>M</span>
+            <span>T</span>
+            <span>W</span>
+            <span>T</span>
+            <span>F</span>
+            <span>S</span>
+            <span>S</span>
           </div>
         </div>
 

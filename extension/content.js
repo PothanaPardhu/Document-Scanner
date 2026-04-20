@@ -249,7 +249,16 @@ function handleAction(action) {
   
   chrome.storage.sync.get(['difficulty', 'targetLang'], (result) => {
     const level = result.difficulty || 'Medium';
-    const lang = result.targetLang || 'Hindi';
+    const lang = result.targetLang || 'hi';
+    
+    const langNames = {
+      'hi': 'Hindi',
+      'te': 'Telugu',
+      'es': 'Spanish',
+      'fr': 'French',
+      'de': 'German'
+    };
+    const langName = langNames[lang] || lang;
     
     chrome.runtime.sendMessage({
       action: action,
@@ -277,7 +286,7 @@ function handleAction(action) {
           audioText = response.summary;
           noTaskStarted = false; // Mark as active usage
         } else if (action === 'translate') {
-          contentHtml = `<strong>Translated (${lang}):</strong><p>${response.translatedText}</p>`;
+          contentHtml = `<strong>Translated (${langName}):</strong><p>${response.translatedText}</p>`;
           audioText = response.translatedText;
         } else if (action === 'tasks') {
           let tasksHtml = '<strong>Micro-Tasks:</strong><ul style="padding-left:20px;margin:5px 0;">';

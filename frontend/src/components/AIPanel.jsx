@@ -27,29 +27,26 @@ export default function AIPanel({ loading, aiData }) {
     <div className="h-full flex flex-col overflow-y-auto pr-2 custom-scrollbar animate-fade-in">
       
       {/* Download Actions */}
-      <div className="flex gap-2 justify-end mb-6 sticky top-0 bg-white/90 backdrop-blur pb-2 z-10 pt-2">
+      <div className="flex gap-4 justify-start mb-10 sticky top-0 bg-[#1A1D23] pb-4 z-10">
         <button 
           onClick={() => generateStyledPDF(aiData, 'revision')}
-          className="text-xs font-medium px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
+          className="text-[10px] uppercase tracking-widest text-[#94A3B8] hover:text-white transition-colors"
         >
-          ↓ Quick Revision PDF
+          Revision PDF
         </button>
         <button 
           onClick={() => generateStyledPDF(aiData, 'full')}
-          className="text-xs font-medium px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200"
+          className="text-[10px] uppercase tracking-widest text-[#6366F1] hover:text-[#4F46E5] transition-colors"
         >
-          ↓ Full Notes PDF
+          Full Manuscript
         </button>
       </div>
 
       {/* Summary */}
       {aiData.summary && (
-        <div className="mb-8">
-          <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-3">
-            <BookOpen size={20} className="text-indigo-600" />
-            Executive Summary
-          </h3>
-          <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100/50 text-gray-700 leading-relaxed text-sm">
+        <div className="mb-12">
+          <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8] mb-6">Executive Summary</h3>
+          <div className="serif-content text-lg leading-relaxed text-[#F2F2F2]">
             {aiData.summary}
           </div>
         </div>
@@ -57,13 +54,12 @@ export default function AIPanel({ loading, aiData }) {
 
       {/* Key Points */}
       {aiData.key_points && aiData.key_points.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Key Concepts</h3>
-          <ul className="flex flex-col gap-2">
+        <div className="mb-12">
+          <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8] mb-6">Strategic Concepts</h3>
+          <ul className="flex flex-col gap-6">
             {aiData.key_points.map((point, i) => (
-              <li key={i} className="flex gap-3 text-sm text-gray-700 items-start">
-                <span className="text-indigo-500 mt-1">•</span>
-                <span>{point}</span>
+              <li key={i} className="serif-content text-md text-[#D1D5DB] border-l border-[#2D323A] pl-6 py-1">
+                {point}
               </li>
             ))}
           </ul>
@@ -72,17 +68,18 @@ export default function AIPanel({ loading, aiData }) {
 
       {/* Micro Tasks */}
       {aiData.tasks && aiData.tasks.length > 0 && (
-        <div className="mb-8">
-          <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-3">
-            <CheckSquare size={20} className="text-emerald-600" />
-            Micro-Tasks (2-5 mins)
-          </h3>
+        <div className="mb-12">
+          <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8] mb-6">Cognitive Tasks</h3>
           <div className="flex flex-col gap-2">
             {aiData.tasks.map((task, i) => (
-              <label key={i} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-emerald-300 transition-colors cursor-pointer group shadow-sm">
-                <input type="checkbox" className="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
-                <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{task}</span>
-              </label>
+              <div key={i} className="group flex items-center justify-between p-4 bg-[#0F1115] border border-[#2D323A] rounded hover:border-[#6366F1]/30 transition-all cursor-pointer">
+                <div className="flex items-center gap-4">
+                  <div className="w-4 h-4 rounded border border-[#2D323A] group-hover:border-[#6366F1] flex items-center justify-center transition-colors">
+                    <div className="w-1 h-1 bg-[#6366F1] scale-0 group-hover:scale-100 transition-transform"></div>
+                  </div>
+                  <span className="text-xs text-[#94A3B8] group-hover:text-white transition-colors">{task}</span>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -90,19 +87,16 @@ export default function AIPanel({ loading, aiData }) {
 
       {/* Quiz */}
       {aiData.quiz && aiData.quiz.length > 0 && (
-        <div className="mb-6">
-          <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-3">
-            <HelpCircle size={20} className="text-purple-600" />
-            Self-Assessment Quiz
-          </h3>
-          <div className="flex flex-col gap-3">
+        <div className="mb-10">
+          <h3 className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8] mb-6">Self-Assessment</h3>
+          <div className="flex flex-col gap-8">
             {aiData.quiz.map((q, i) => (
-              <div key={i} className="p-4 bg-purple-50/50 rounded-xl border border-purple-100/50">
-                <p className="text-sm font-medium text-gray-800 mb-2">Q{i+1}: {q}</p>
+              <div key={i} className="serif-content">
+                <p className="text-md text-[#F2F2F2] mb-4 italic">"{q}"</p>
                 <input 
                   type="text" 
-                  placeholder="Think of your answer..." 
-                  className="w-full text-sm bg-white border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Draft your reflection..." 
+                  className="w-full text-xs bg-transparent border-b border-[#2D323A] py-2 focus:outline-none focus:border-[#6366F1] transition-colors placeholder:text-[#4B5563]"
                 />
               </div>
             ))}

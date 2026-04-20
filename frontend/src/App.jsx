@@ -7,22 +7,22 @@ import PdfReader from './pages/PdfReader';
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex h-screen bg-gray-50 text-gray-900">
+      <div className="flex h-screen bg-[#0F1115] text-[#F2F2F2]">
         {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 px-4 py-8 flex flex-col gap-6">
-          <div className="px-4">
-            <h1 className="text-2xl font-bold text-indigo-600">Focus-Flow</h1>
-            <p className="text-xs text-gray-500 mt-1">Cognitive Support System</p>
+        <aside className="w-64 bg-[#1A1D23] border-r border-[#2D323A] px-4 py-10 flex flex-col gap-10">
+          <div className="px-6">
+            <h1 className="text-xl font-medium tracking-tight text-white uppercase">Focus-Flow</h1>
+            <p className="text-[10px] tracking-[0.2em] text-[#94A3B8] uppercase mt-1">Cognitive AI</p>
           </div>
           
-          <nav className="flex flex-col gap-2 mt-4">
-            <Link to="/" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-gray-700 hover:text-indigo-600 transition-colors">
-              <LayoutDashboard size={20} />
-              <span className="font-medium">Dashboard</span>
+          <nav className="flex flex-col gap-1 mt-4">
+            <Link to="/" className="flex items-center gap-4 px-6 py-3 rounded-md hover:bg-[#6366F1]/10 text-[#94A3B8] hover:text-white transition-all group">
+              <LayoutDashboard size={18} className="group-hover:text-[#6366F1] transition-colors" />
+              <span className="text-sm font-medium">Dashboard</span>
             </Link>
-            <Link to="/pdf" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-gray-700 hover:text-indigo-600 transition-colors">
-              <FileText size={20} />
-              <span className="font-medium">PDF Reader</span>
+            <Link to="/pdf" className="flex items-center gap-4 px-6 py-3 rounded-md hover:bg-[#6366F1]/10 text-[#94A3B8] hover:text-white transition-all group">
+              <FileText size={18} className="group-hover:text-[#6366F1] transition-colors" />
+              <span className="text-sm font-medium">PDF Reader</span>
             </Link>
           </nav>
         </aside>

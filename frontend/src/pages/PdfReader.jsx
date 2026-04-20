@@ -45,20 +45,20 @@ export default function PdfReader() {
   };
 
   return (
-    <div className="flex h-full animate-fade-in bg-gray-100 p-6 gap-6">
+    <div className="flex h-full animate-fade-in bg-[#0F1115] p-10 gap-10">
       
       {/* Left Area: PDF Viewer */}
-      <div className="flex-1 flex flex-col gap-4 max-w-4xl">
-        <header className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
+      <div className="flex-1 flex flex-col gap-6 max-w-5xl mx-auto">
+        <header className="flex justify-between items-center bg-[#1A1D23] p-6 rounded border border-[#2D323A]">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <FileText className="text-indigo-600" /> 
-              PDF Focus Mode
+            <h2 className="text-lg font-medium tracking-tight text-white uppercase flex items-center gap-3">
+              <FileText size={18} className="text-[#6366F1]" /> 
+              Reading Studio
             </h2>
-            <p className="text-sm text-gray-500">Read and simplify complex documents.</p>
+            <p className="text-[10px] tracking-widest text-[#94A3B8] uppercase mt-1">Focus Mode Active</p>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <input 
               type="file" 
               accept=".pdf" 
@@ -68,40 +68,39 @@ export default function PdfReader() {
             />
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="btn-secondary"
+              className="btn-secondary text-[10px] uppercase tracking-widest px-6"
             >
-              <Upload size={18} /> Upload PDF
+              Upload
             </button>
             
             {file && (
               <button 
                 onClick={handleProcessFullDocument}
                 disabled={aiLoading}
-                className={`btn-primary ${aiLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`btn-primary text-[10px] uppercase tracking-widest px-6 ${aiLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                ✨ Simplify Full Document
+                {aiLoading ? 'Analyzing...' : 'Simplify'}
               </button>
             )}
           </div>
         </header>
 
-        <div className="flex-1 glass-panel overflow-hidden relative bg-white">
+        <div className="flex-1 premium-card overflow-hidden relative p-0 bg-[#0F1115]">
           {!pdfUrl ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-              <File size={64} className="mb-4 opacity-50 text-indigo-300" />
-              <p className="text-lg font-medium text-gray-600">No Document Selected</p>
-              <p className="text-sm mt-2">Upload a PDF to begin reading and simplifying.</p>
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="mt-6 text-indigo-600 font-medium hover:underline"
-              >
-                Browse Files
-              </button>
+            <div 
+              className="absolute inset-0 flex flex-col items-center justify-center border border-dashed border-[#2D323A] rounded-md m-4 hover:border-[#6366F1]/50 transition-colors cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <div className="w-12 h-12 rounded-full border border-[#2D323A] flex items-center justify-center mb-6">
+                <Upload size={20} className="text-[#4B5563]" />
+              </div>
+              <p className="text-sm font-medium text-[#F2F2F2]">Drop your manuscript here</p>
+              <p className="text-[10px] uppercase tracking-widest text-[#4B5563] mt-2">Supports PDF up to 50MB</p>
             </div>
           ) : (
             <iframe 
               src={`${pdfUrl}#toolbar=0&navpanes=0`} 
-              className="w-full h-full border-none"
+              className="w-full h-full border-none invert brightness-90 grayscale-[0.5]"
               title="PDF Viewer"
             ></iframe>
           )}
@@ -109,16 +108,14 @@ export default function PdfReader() {
       </div>
 
       {/* Right Area: AI Panel */}
-      <aside className="w-96 glass-panel flex flex-col overflow-hidden bg-white/80">
-        <header className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
-          <h3 className="font-bold text-gray-900">Study Guide</h3>
+      <aside className="w-[400px] premium-card flex flex-col overflow-hidden p-0">
+        <header className="p-6 border-b border-[#2D323A] flex justify-between items-center bg-[#1A1D23]">
+          <h3 className="text-xs uppercase tracking-[0.2em] text-[#94A3B8]">Study Insights</h3>
           {aiData && (
-            <span className="text-xs font-semibold px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-center">
-              Generated
-            </span>
+            <div className="w-2 h-2 bg-[#10B981] rounded-full animate-pulse"></div>
           )}
         </header>
-        <div className="flex-1 p-5 overflow-hidden">
+        <div className="flex-1 p-6 overflow-hidden">
           <AIPanel loading={aiLoading} aiData={aiData} />
         </div>
       </aside>
