@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Focus-Flow AI</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Load MediaPipe in popup -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Focus-Flow</h1>
+      <label class="switch">
+        <input type="checkbox" id="demo-mode-toggle">
+        <span class="slider round"></span>
+      </label>
+      <span class="demo-label">Demo</span>
+    </header>
+
+    <div class="main-content">
+      <div class="setting-group">
+        <label for="difficulty">Reading Difficulty:</label>
+        <select id="difficulty">
+          <option value="Easy">Easy</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="Technical">Technical</option>
+        </select>
+      </div>
+
+      <button id="btn-login" class="btn primary">Login with Google</button>
+      
+      <div class="camera-section">
+        <button id="btn-gesture" class="btn secondary">Enable Gesture Sweep</button>
+        <video id="video-feed" style="display:none;" autoplay playsinline></video>
+        <div id="gesture-status">Gestures: Off</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
