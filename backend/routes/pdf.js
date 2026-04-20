@@ -34,13 +34,17 @@ router.post('/process-large', upload.single('pdf'), async (req, res) => {
     const data = await pdfParse(req.file.buffer);
     const chunks = splitTextIntoChunks(data.text);
     
-    // Process chunks sequentially or in parallel depending on rate limits
-    // For safety with rate limits, sequential is often better:
+    // Speed Optimization: Process chunks in parallel using Promise.all
+    // We batch them to avoid hitting rate limits instantly
     const aiResponses = [];
-    for (const chunk of chunks) {
-      // Get notes for each chunk
-      const result = await aiService.generateNotes(chunk);
-      aiResponses.push(result);
+    const BATCH_SIZE = 3;
+    
+    for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
+      const batch = chunks.slice(i, i + BATCH_SIZE);
+      const batchPromises = batch.map(chunk => aiService.generateNotes(chunk));
+      
+      const batchResults = await Promise.all(batchPromises);
+      aiResponses.push(...batchResults);
     }
     
     const mergedResult = mergeAIResponses(aiResponses);

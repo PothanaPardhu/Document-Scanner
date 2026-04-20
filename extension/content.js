@@ -168,8 +168,9 @@ function handleAction(action) {
       if (response && response.error) {
         resultArea.innerHTML = `<span style="color:red">Error: ${response.error}</span>`;
       } else if (response) {
+        let contentHtml = '';
         if (action === 'simplify') {
-          resultArea.innerHTML = `<strong>Simplified:</strong><p>${response.summary}</p>`;
+          contentHtml = `<strong>Simplified:</strong><p>${response.summary}</p>`;
           noTaskStarted = false; // Mark as active usage
         } else if (action === 'tasks') {
           let tasksHtml = '<strong>Micro-Tasks:</strong><ul style="padding-left:20px;margin:5px 0;">';
@@ -177,9 +178,77 @@ function handleAction(action) {
             tasksHtml += `<li><input type="checkbox"> ${t}</li>`;
           });
           tasksHtml += '</ul>';
-          resultArea.innerHTML = tasksHtml;
+          contentHtml = tasksHtml;
           noTaskStarted = false;
         }
+
+        // Add the Export to PDF button
+        resultArea.innerHTML = `
+          ${contentHtml}
+          <button class="ff-btn ff-btn-primary" id="ff-export-pdf" style="margin-top: 10px; width: 100%; background: #10b981;">📄 Export Exam PDF</button>
+        `;
+
+        document.getElementById('ff-export-pdf').addEventListener('click', () => {
+          // Open a new window for lightning-fast native PDF printing
+          const printWindow = window.open('', '_blank');
+          
+          const title = action === 'simplify' ? 'Simplified Executive Summary' : 'Actionable Micro-Tasks';
+          const bodyContent = action === 'simplify' 
+            ? `<div class="highlight-box">${response.summary}</div>`
+            : `<ul>${response.tasks.map(t => `<li><span class="checkbox"></span>${t}</li>`).join('')}</ul>`;
+
+          printWindow.document.write(`
+            <html>
+              <head>
+                <title>Focus-Flow Exam Notes</title>
+                <style>
+                  body { font-family: 'Inter', 'Helvetica', sans-serif; margin: 0; padding: 0; color: #1f2937; background: #f9fafb; }
+                  .container { max-width: 800px; margin: 0 auto; background: white; min-height: 100vh; display: grid; grid-template-columns: 250px 1fr; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+                  .sidebar { background: #4f46e5; color: white; padding: 40px 20px; }
+                  .sidebar h1 { font-size: 24px; margin: 0 0 10px 0; }
+                  .sidebar p { opacity: 0.8; font-size: 14px; }
+                  .hero-img { width: 100%; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                  .content { padding: 50px 40px; }
+                  .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px; margin-bottom: 20px; font-weight: bold; }
+                  .highlight-box { background: #f3f4f6; border-left: 4px solid #4f46e5; padding: 20px; font-size: 16px; line-height: 1.6; border-radius: 0 8px 8px 0; }
+                  ul { list-style-type: none; padding: 0; }
+                  li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 15px; font-size: 16px; line-height: 1.5; }
+                  .checkbox { width: 18px; height: 18px; border: 2px solid #4f46e5; border-radius: 4px; display: inline-block; flex-shrink: 0; margin-top: 2px; }
+                  @media print {
+                    body { background: white; }
+                    .container { box-shadow: none; max-width: 100%; grid-template-columns: 200px 1fr; }
+                    .sidebar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    .highlight-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="sidebar">
+                    <h1>Focus-Flow<br>Study Notes</h1>
+                    <p>Generated on ${new Date().toLocaleDateString()}</p>
+                    <p style="margin-top: 40px; font-style: italic;">"Minimize the start gap. Maximize your focus."</p>
+                  </div>
+                  <div class="content">
+                    <img class="hero-img" src="https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=800&q=80" alt="Study Image" crossorigin="anonymous">
+                    <div class="section-title">${title}</div>
+                    ${bodyContent}
+                    <div style="margin-top: 50px;" class="section-title">Original Context Length</div>
+                    <p style="color: #6b7280; font-size: 14px;">${currentSelection.length} characters successfully compressed.</p>
+                  </div>
+                </div>
+                <script>
+                  // Wait a split second for the image to load before triggering print
+                  setTimeout(() => {
+                    window.print();
+                  }, 500);
+                </script>
+              </body>
+            </html>
+          `);
+          printWindow.document.close();
+        });
+
       } else {
         resultArea.innerHTML = `<span style="color:red">No response from AI</span>`;
       }

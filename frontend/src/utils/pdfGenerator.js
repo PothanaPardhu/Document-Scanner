@@ -1,6 +1,18 @@
 import { jsPDF } from 'jspdf';
+import heroImg from '../assets/hero.png';
 
-export function generateStyledPDF(notesData, mode = 'full') {
+// Helper to load image securely without CORS issues on same-origin
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+export async function generateStyledPDF(notesData, mode = 'full') {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -8,126 +20,136 @@ export function generateStyledPDF(notesData, mode = 'full') {
   });
 
   const pageWidth = doc.internal.pageSize.getWidth();
-  const margin = 20;
-  let cursorY = 20;
-
+  const pageHeight = doc.internal.pageSize.getHeight();
+  
+  // Layout Constants
+  const leftColWidth = 60;
+  const rightColX = leftColWidth + 10;
+  const rightColWidth = pageWidth - leftColWidth - 20;
+  
   // Colors
   const primaryColor = [79, 70, 229]; // Indigo-600
+  const sidebarColor = [249, 250, 251]; // Gray-50
   const textColor = [31, 41, 55]; // Gray-800
-  const lightBgColor = [243, 244, 246]; // Gray-100
+  const lightTextColor = [107, 114, 128]; // Gray-500
 
-  // Title
+  // Draw Sidebar Background
+  const drawSidebar = () => {
+    doc.setFillColor(...sidebarColor);
+    doc.rect(0, 0, leftColWidth, pageHeight, 'F');
+  };
+  
+  drawSidebar();
+
+  // Load and Add Header Image
+  try {
+    const img = await loadImage(heroImg);
+    // Draw image at the top of the sidebar
+    doc.addImage(img, 'PNG', 5, 10, leftColWidth - 10, 30);
+  } catch (e) {
+    console.log("Could not load header image for PDF", e);
+  }
+
+  let cursorY = 20;
+  let leftCursorY = 50;
+
+  // Title in Sidebar
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(24);
+  doc.setFontSize(22);
   doc.setTextColor(...primaryColor);
-  doc.text('Focus-Flow Study Notes', margin, cursorY);
+  const titleLines = doc.splitTextToSize('Focus-Flow Study Notes', leftColWidth - 10);
+  doc.text(titleLines, 5, leftCursorY);
+  leftCursorY += (titleLines.length * 8) + 5;
   
-  cursorY += 8;
   doc.setFont('helvetica', 'italic');
-  doc.setFontSize(10);
-  doc.setTextColor(107, 114, 128); // Gray-500
-  doc.text(`Generated on ${new Date().toLocaleDateString()} | Mode: ${mode === 'full' ? 'Full Notes' : 'Quick Revision'}`, margin, cursorY);
-  
-  cursorY += 15;
-  
-  // Separator Line
-  doc.setDrawColor(229, 231, 235); // Gray-200
-  doc.setLineWidth(0.5);
-  doc.line(margin, cursorY - 5, pageWidth - margin, cursorY - 5);
+  doc.setFontSize(9);
+  doc.setTextColor(...lightTextColor);
+  doc.text(`${new Date().toLocaleDateString()}`, 5, leftCursorY);
+  leftCursorY += 5;
+  doc.text(`Mode: ${mode === 'full' ? 'Full Notes' : 'Quick Revision'}`, 5, leftCursorY);
 
-  const writeText = (text, type = 'normal') => {
-    // Basic page break logic
-    if (cursorY > 270) {
+  const checkPageBreak = (heightNeeded) => {
+    if (cursorY + heightNeeded > pageHeight - 20) {
       doc.addPage();
+      drawSidebar();
       cursorY = 20;
-    }
-
-    if (type === 'heading') {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.setTextColor(...primaryColor);
-      doc.text(text, margin, cursorY);
-      cursorY += 8;
-    } else if (type === 'subheading') {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(...textColor);
-      doc.text(text, margin, cursorY);
-      cursorY += 6;
-    } else if (type === 'normal') {
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(11);
-      doc.setTextColor(...textColor);
-      const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
-      doc.text(lines, margin, cursorY);
-      cursorY += (lines.length * 5) + 4;
-    } else if (type === 'bullet') {
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(11);
-      doc.setTextColor(...textColor);
-      const lines = doc.splitTextToSize(`• ${text}`, pageWidth - margin * 2 - 5);
-      doc.text(lines, margin + 5, cursorY);
-      cursorY += (lines.length * 5) + 3;
-    } else if (type === 'highlightBox') {
-      doc.setFillColor(...lightBgColor);
-      doc.setDrawColor(...primaryColor);
-      doc.setLineWidth(0.5);
-      
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(...textColor);
-      
-      const lines = doc.splitTextToSize(text, pageWidth - margin * 2 - 10);
-      const boxHeight = (lines.length * 5) + 10;
-      
-      // Check page break for box
-      if (cursorY + boxHeight > 280) {
-        doc.addPage();
-        cursorY = 20;
-      }
-      
-      doc.roundedRect(margin, cursorY, pageWidth - margin * 2, boxHeight, 3, 3, 'FD');
-      doc.text(lines, margin + 5, cursorY + 7);
-      cursorY += boxHeight + 8;
+      leftCursorY = 20;
     }
   };
 
+  const writeSection = (heading, contentArray, type = 'normal') => {
+    if (!contentArray || contentArray.length === 0) return;
+    
+    // Estimate height
+    const estimatedHeight = 10 + (contentArray.length * 6);
+    checkPageBreak(estimatedHeight);
+
+    // Write Side Heading in Left Column
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(...primaryColor);
+    doc.text(heading, 5, cursorY);
+
+    // Write Content in Right Column
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setTextColor(...textColor);
+    
+    contentArray.forEach(item => {
+      let text = item;
+      if (type === 'bullet') text = `•  ${item}`;
+      if (type === 'task') text = `[ ]  ${item}`;
+      if (type === 'quiz') text = `Q:  ${item}`;
+      
+      const lines = doc.splitTextToSize(text, rightColWidth);
+      
+      if (type === 'highlight') {
+        doc.setFillColor(243, 244, 246);
+        doc.setDrawColor(...primaryColor);
+        doc.setLineWidth(0.5);
+        const boxHeight = (lines.length * 5) + 6;
+        doc.roundedRect(rightColX - 3, cursorY - 4, rightColWidth + 6, boxHeight, 2, 2, 'FD');
+      }
+      
+      doc.text(lines, rightColX, cursorY);
+      cursorY += (lines.length * 5) + 3;
+    });
+    
+    cursorY += 10; // Extra space between sections
+  };
+
   if (!notesData) {
-    writeText('No notes generated yet.', 'normal');
+    checkPageBreak(20);
+    doc.setFont('helvetica', 'normal');
+    doc.text('No notes generated yet.', rightColX, cursorY);
     doc.save(`FocusFlow_Notes.pdf`);
     return;
   }
 
-  // Summary (Highlight Box)
+  // Generate Sections
   if (notesData.summary) {
-    writeText('Executive Summary', 'heading');
-    writeText(notesData.summary, 'highlightBox');
+    writeSection('Executive\nSummary', [notesData.summary], 'highlight');
   }
 
-  // Key Points
   if (notesData.key_points && notesData.key_points.length > 0) {
-    writeText('Key Concepts', 'heading');
-    notesData.key_points.forEach(kp => writeText(kp, 'bullet'));
-    cursorY += 4;
+    writeSection('Key\nConcepts', notesData.key_points, 'bullet');
   }
 
-  // If Full Mode, include tasks and quiz
   if (mode === 'full') {
     if (notesData.tasks && notesData.tasks.length > 0) {
-      writeText('Actionable Micro-Tasks', 'heading');
-      notesData.tasks.forEach(t => {
-        writeText(`[ ] ${t}`, 'normal');
-      });
-      cursorY += 4;
+      writeSection('Actionable\nMicro-Tasks', notesData.tasks, 'task');
     }
 
     if (notesData.quiz && notesData.quiz.length > 0) {
-      writeText('Self-Assessment Quiz', 'heading');
-      notesData.quiz.forEach((q, idx) => {
-        writeText(`Q${idx + 1}: ${q}`, 'subheading');
-      });
+      writeSection('Self-Test\nQuiz', notesData.quiz, 'quiz');
     }
   }
+
+  // Footer
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(8);
+  doc.setTextColor(...lightTextColor);
+  doc.text('Generated by Focus-Flow AI', pageWidth - 45, pageHeight - 10);
 
   doc.save(`FocusFlow_${mode === 'full' ? 'StudyNotes' : 'QuickRevision'}.pdf`);
 }
