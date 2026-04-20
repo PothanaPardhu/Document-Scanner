@@ -35,92 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
     btnLogin.innerText = 'Logged In';
   });
 
-  // MediaPipe Gesture Detection implementation
-  let isGestureActive = false;
-  let camera = null;
-  const videoElement = document.getElementById('video-feed');
-
-  btnGesture.addEventListener('click', async () => {
-    if (isGestureActive) {
-      // Stop gesture
-      if (camera) camera.stop();
-      videoElement.srcObject.getTracks().forEach(track => track.stop());
-      isGestureActive = false;
-      btnGesture.innerText = 'Enable Gesture Sweep';
-      gestureStatus.innerText = 'Gestures: Off';
-      return;
-    }
-
-    // Start gesture
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoElement.srcObject = stream;
-      
-      const hands = new Hands({
-        locateFile: (file) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-        }
-      });
-      
-      hands.setOptions({
-        maxNumHands: 1,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5
-      });
-      
-      let lastSwipeTime = 0;
-
-      hands.onResults((results) => {
-        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-          gestureStatus.innerText = 'Hand detected...';
-          const landmarks = results.multiHandLandmarks[0];
-          
-          // Simple swipe detection: hand moving rapidly horizontally
-          // We can check the delta of wrist position or index finger tip
-          const wrist = landmarks[0];
-          // For a real implementation, we'd track previous positions.
-          // For demo, we just trigger when hand is far left or right quickly
-          
-          const now = Date.now();
-          if (now - lastSwipeTime > 2000) {
-            if (wrist.x < 0.2 || wrist.x > 0.8) {
-              lastSwipeTime = now;
-              gestureStatus.innerText = 'Swipe Detected! Clearing UI...';
-              
-              // Send message to content script to trigger panic/focus mode
-              chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                if (tabs[0]) {
-                  chrome.tabs.sendMessage(tabs[0].id, { action: "triggerGestureCleanup" });
-                }
-              });
-              
-              setTimeout(() => {
-                gestureStatus.innerText = 'Tracking...';
-              }, 2000);
-            }
-          }
-        } else {
-          gestureStatus.innerText = 'Tracking...';
-        }
-      });
-      
-      camera = new Camera(videoElement, {
-        onFrame: async () => {
-          await hands.send({image: videoElement});
-        },
-        width: 320,
-        height: 240
-      });
-      
-      camera.start();
-      isGestureActive = true;
-      btnGesture.innerText = 'Disable Gesture Sweep';
-      gestureStatus.innerText = 'Gestures: On';
-
-    } catch (err) {
-      console.error("Camera access error:", err);
-      gestureStatus.innerText = 'Camera access denied';
-    }
+  // Simplify Gesture to open a dedicated Background Tab (Gesture Hub)
+  // This solves the "Camera Access Denied" issue in Manifest V3 popups.
+  btnGesture.addEventListener('click', () => {
+    chrome.tabs.create({ 
+      url: chrome.runtime.getURL('gesture.html'),
+      active: true // Open and focus the tab so they can click 'Allow'
+    });
+    window.close(); // Close the popup
   });
 });
