@@ -15,7 +15,12 @@ router.post('/simplify', async (req, res) => {
     const result = await aiService.simplifyText(text, level || 'Medium');
     res.json(result);
   } catch (error) {
-    res.status(500).json({ error: 'AI processing failed' });
+    console.error('Simplify endpoint error:', error);
+    res.status(500).json({ 
+      error: 'AI processing failed',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -27,7 +32,12 @@ router.post('/tasks', async (req, res) => {
     const result = await aiService.generateTasks(text);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ error: 'AI processing failed' });
+    console.error('Tasks endpoint error:', error);
+    res.status(500).json({ 
+      error: 'AI processing failed',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -39,7 +49,12 @@ router.post('/notes', async (req, res) => {
     const result = await aiService.generateNotes(text);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ error: 'AI processing failed' });
+    console.error('Notes endpoint error:', error);
+    res.status(500).json({ 
+      error: 'AI processing failed',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -51,7 +66,12 @@ router.post('/quiz', async (req, res) => {
     const result = await aiService.generateQuiz(text);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ error: 'AI processing failed' });
+    console.error('Quiz endpoint error:', error);
+    res.status(500).json({ 
+      error: 'AI processing failed',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -63,7 +83,12 @@ router.post('/example', async (req, res) => {
     const result = await aiService.explainExample(text);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ error: 'AI processing failed' });
+    console.error('Example endpoint error:', error);
+    res.status(500).json({ 
+      error: 'AI processing failed',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -75,7 +100,12 @@ router.post('/translate', async (req, res) => {
     const result = await aiService.translateText(text, targetLang || 'hi');
     res.json(result);
   } catch (error) {
-    res.status(500).json({ error: 'Translation failed' });
+    console.error('Translate endpoint error:', error);
+    res.status(500).json({ 
+      error: 'Translation failed',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 

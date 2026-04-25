@@ -67,21 +67,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function handleApiCall(url, body) {
   try {
-    console.log(`Focus-Flow: Calling ${url}`);
+    console.log(`Focus-Flow: Calling ${url}`, body);
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      timeout: 30000
     });
     
+    const data = await response.json().catch(() => null);
+    
     if (!response.ok) {
-      console.error(`Focus-Flow: ${url} returned ${response.status}`);
-      throw new Error(`API returned ${response.status} (${url})`);
+      console.error(`Focus-Flow: ${url} returned ${response.status}`, data);
+      throw new Error(
+        data?.details || 
+        data?.error || 
+        `API returned ${response.status} - ${response.statusText}`
+      );
     }
     
-    return await response.json();
+    console.log(`Focus-Flow: ${url} success`, data);
+    return data;
   } catch (error) {
     console.error("Focus-Flow: API Call Error:", error);
     throw error;

@@ -276,7 +276,23 @@ function handleAction(action) {
       }
 
       if (response.error) {
-        resultArea.innerHTML = `<span style="color:red">Error: ${response.error}</span>`;
+        const errorDetail = response.details ? ` (${response.details})` : '';
+        resultArea.innerHTML = `
+          <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:12px;color:#991b1b;">
+            <div style="font-weight:bold;margin-bottom:4px;">⚠️ Error</div>
+            <div style="font-size:12px;line-height:1.4;">
+              ${response.error}${errorDetail}
+              <br/><br/>
+              <strong>Troubleshooting:</strong>
+              <ul style="margin:8px 0;padding-left:20px;">
+                <li>Make sure the backend server is running on port 5000</li>
+                <li>Check if GEMINI_API_KEY is set in your .env file</li>
+                <li>Try reloading the extension</li>
+                <li>Open Developer Tools (F12) to see detailed logs</li>
+              </ul>
+            </div>
+          </div>
+        `;
       } else {
         let contentHtml = '';
         let audioText = '';
