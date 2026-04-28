@@ -4,10 +4,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const admin = require('firebase-admin');
 
-// Initialize Firebase Admin (Note: FIREBASE_PRIVATE_KEY is usually structured differently depending on how it's passed)
-// For now we try parsing if it's set, otherwise we skip to allow the app to run without it initially.
+// Firebase Initialization
 try {
-  if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_PRIVATE_KEY !== "your-private-key") {
+  if (
+    process.env.FIREBASE_PROJECT_ID &&
+    process.env.FIREBASE_CLIENT_EMAIL &&
+    process.env.FIREBASE_PRIVATE_KEY &&
+    process.env.FIREBASE_PRIVATE_KEY !== "your-private-key"
+  ) {
     admin.initializeApp({
       credential: admin.credential.cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
@@ -25,13 +29,33 @@ try {
 
 const app = express();
 
-// Middleware
+
+// ✅ CORS CONFIG (UPDATED)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5000',
+  process.env.FRONTEND_URL // your deployed frontend (Vercel)
+];
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5000', 'chrome-extension://*'],
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn("Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -67,6 +91,5 @@ mongoose.connect(MONGO_URI)
   })
   .catch(err => {
     console.error('MongoDB Connection Error:', err);
-    // Start server anyway for routes that don't need DB
     app.listen(PORT, () => console.log(`Server running on port ${PORT} (without DB)`));
   });
