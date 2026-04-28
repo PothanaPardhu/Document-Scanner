@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Target, Clock, CheckCircle2, TrendingUp } from 'lucide-react';
+import API_URL from '../api';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -12,7 +13,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/progress/stats')
+    fetch(`${API_URL}/api/progress/stats`)
       .then(res => res.json())
       .then(data => {
         setStats(data);
