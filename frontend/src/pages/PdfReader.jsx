@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Upload, File, FileText } from 'lucide-react';
 import AIPanel from '../components/AIPanel';
 import axios from 'axios';
+import API_URL from '../api';
 
 export default function PdfReader() {
   const [file, setFile] = useState(null);
@@ -31,7 +32,7 @@ export default function PdfReader() {
 
     try {
       // In production, point to real backend. Using localhost for dev.
-      const response = await axios.post('http://localhost:5000/api/pdf/process-large', formData, {
+      const response = await axios.post(`${API_URL}/api/pdf/process-large`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
