@@ -96,6 +96,7 @@ Document-Scanner/
 ## 🔐 Environment Variables
 
 Create a `.env` file inside `/backend`:
+```
 PORT=5000
 MONGO_URI=your_mongodb_connection
 GEMINI_API_KEY=your_gemini_api_key
@@ -103,7 +104,7 @@ FIREBASE_PROJECT_ID=your_project_id
 FIREBASE_CLIENT_EMAIL=your_client_email
 FIREBASE_PRIVATE_KEY=your_private_key
 ---
-
+```
 ## ⚙️ Setup & Installation
 
 ### 1️⃣ Clone the Repository
