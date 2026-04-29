@@ -186,10 +186,10 @@ Instead of replacing learning, it **supports and guides the learning process**.
   https://github.com/PothanaPardhu/Document-Scanner.git  
 
 - **Chrome Extension (Download):**  
-  *(Add your Google Drive link here)*  
+  https://drive.google.com/file/d/1YYHxAFkoymVWBqgjLK6Kt0D7_twHsQR3/view?usp=sharing
 
 - **Demo Video:**  
-  *(Add your video link here)*  
+  https://drive.google.com/file/d/1YYHxAFkoymVWBqgjLK6Kt0D7_twHsQR3/view?usp=sharing
 
 ---
 
