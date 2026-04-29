@@ -46,11 +46,11 @@ export default function PdfReader() {
   };
 
   return (
-    <div className="flex h-full animate-fade-in bg-[#0F1115] p-10 gap-10">
+    <div className="flex flex-col lg:flex-row h-full animate-fade-in bg-[#0F1115] p-4 md:p-10 gap-4 md:gap-10">
       
       {/* Left Area: PDF Viewer */}
       <div className="flex-1 flex flex-col gap-6 max-w-5xl mx-auto">
-        <header className="flex justify-between items-center bg-[#1A1D23] p-6 rounded border border-[#2D323A]">
+        <header className="flex flex-col md:flex-row justify-between items-center bg-[#1A1D23] p-4 md:p-6 rounded border border-[#2D323A]">
           <div>
             <h2 className="text-lg font-medium tracking-tight text-white uppercase flex items-center gap-3">
               <FileText size={18} className="text-[#6366F1]" /> 
@@ -59,7 +59,7 @@ export default function PdfReader() {
             <p className="text-[10px] tracking-widest text-[#94A3B8] uppercase mt-1">Focus Mode Active</p>
           </div>
           
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
             <input 
               type="file" 
               accept=".pdf" 
@@ -69,7 +69,7 @@ export default function PdfReader() {
             />
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="btn-secondary text-[10px] uppercase tracking-widest px-6"
+              className="btn-secondary text-[10px] uppercase tracking-widest px-4 md:px-6"
             >
               Upload
             </button>
@@ -78,7 +78,7 @@ export default function PdfReader() {
               <button 
                 onClick={handleProcessFullDocument}
                 disabled={aiLoading}
-                className={`btn-primary text-[10px] uppercase tracking-widest px-6 ${aiLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`btn-primary text-[10px] uppercase tracking-widest px-4 md:px-6 ${aiLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {aiLoading ? 'Analyzing...' : 'Simplify'}
               </button>
@@ -89,7 +89,7 @@ export default function PdfReader() {
         <div className="flex-1 premium-card overflow-hidden relative p-0 bg-[#0F1115]">
           {!pdfUrl ? (
             <div 
-              className="absolute inset-0 flex flex-col items-center justify-center border border-dashed border-[#2D323A] rounded-md m-4 hover:border-[#6366F1]/50 transition-colors cursor-pointer"
+              className="absolute inset-0 flex flex-col items-center justify-center border border-dashed border-[#2D323A] rounded-md m-2 md:m-4 hover:border-[#6366F1]/50 transition-colors cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
             >
               <div className="w-12 h-12 rounded-full border border-[#2D323A] flex items-center justify-center mb-6">
@@ -109,7 +109,7 @@ export default function PdfReader() {
       </div>
 
       {/* Right Area: AI Panel */}
-      <aside className="w-[400px] premium-card flex flex-col overflow-hidden p-0">
+      <aside className="w-full lg:w-[400px] premium-card flex flex-col overflow-hidden p-0">
         <header className="p-6 border-b border-[#2D323A] flex justify-between items-center bg-[#1A1D23]">
           <h3 className="text-xs uppercase tracking-[0.2em] text-[#94A3B8]">Study Insights</h3>
           {aiData && (
