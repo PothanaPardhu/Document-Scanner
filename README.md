@@ -104,6 +104,9 @@ FIREBASE_PROJECT_ID=your_project_id
 FIREBASE_CLIENT_EMAIL=your_client_email
 FIREBASE_PRIVATE_KEY=your_private_key
 ```
+
+---
+
 ## ⚙️ Setup & Installation
 
 ### 1️⃣ Clone the Repository
@@ -134,7 +137,8 @@ npm run dev
 1. Open Chrome → `chrome://extensions/`  
 2. Enable **Developer Mode**  
 3. Click **Load Unpacked**  
-4. Select `/extension` folder  
+4. Select `/extension` folder
+5. Enable the extension in chrome 
 
 ---
 
