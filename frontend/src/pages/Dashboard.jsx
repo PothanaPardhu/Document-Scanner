@@ -30,10 +30,10 @@ export default function Dashboard() {
     (stats.tasksCompleted * 0.5) + (stats.timeActive * 0.3) - (stats.inactivity * 0.2)
   )));
 
-  if (loading) return <div className="p-10 text-center">Loading your progress...</div>;
+  if (loading) return <div className="p-4 md:p-10 text-center">Loading your progress...</div>;
 
   return (
-    <div className="p-10 animate-fade-in max-w-6xl mx-auto">
+    <div className="p-4 md:p-10 animate-fade-in max-w-6xl mx-auto">
       <header className="mb-12">
         <h2 className="text-2xl font-medium tracking-tight text-white">Dashboard</h2>
         <p className="text-sm text-[#94A3B8] mt-1">Academic performance & focus analysis.</p>
