@@ -71,13 +71,16 @@ Instead of just providing information, it helps users:
 
 ---
 
-## 🏗️ Project StructureDocument-Scanner/
-│── backend/ # Node.js + Express API
-│── frontend/ # React Dashboard (PDF Mode)
-│── extension/ # Chrome Extension (Web Mode)
-│── .gitignore
-│── SETUP.md
----
+## 🏗️ Project Structure
+
+```
+Document-Scanner/
+├── backend/      # Node.js + Express API
+├── frontend/     # React Dashboard (PDF Mode)
+├── extension/    # Chrome Extension (Web Mode)
+├── .gitignore
+└── SETUP.md
+```
 
 ## 🛠️ Tech Stack
 
