@@ -82,6 +82,8 @@ Document-Scanner/
 └── SETUP.md
 ```
 
+---
+
 ## 🛠️ Tech Stack
 
 - **Frontend:** React, CSS  
