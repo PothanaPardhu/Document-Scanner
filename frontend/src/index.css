@@ -40,6 +40,12 @@ body {
     transition: var(--transition-smooth);
   }
 
+  @media (max-width: 768px) {
+    .premium-card {
+      padding: 1rem;
+    }
+  }
+
   .premium-card:hover {
     border-color: rgba(99, 102, 241, 0.5);
   }
@@ -93,6 +99,13 @@ body {
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-subtle);
     transition: var(--transition-smooth);
+  }
+
+  @media (max-width: 768px) {
+    .btn-primary, .btn-secondary {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+    }
   }
 
   .btn-secondary:hover {
